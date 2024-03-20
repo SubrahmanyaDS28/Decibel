@@ -13,7 +13,8 @@ unsigned long totalPressedTime = 0;
 int analogSensorCount = 0;
 unsigned long aboveThresholdDuration = 0;
 unsigned long lastAboveThresholdTime = 0;
-const int threshold = 475;
+const int threshold = 465;
+int flag = 1;
 
 void setup() {
   Serial.begin(9600);
@@ -51,11 +52,14 @@ void loop() {
 
   // Analog sensor reading and processing
   int sensorValue = analogRead(analogPin);
-  if (sensorValue < threshold) {
+  if (sensorValue < threshold && flag =1) {
     if (analogSensorCount == 0) {
       lastAboveThresholdTime = millis();
     }
-    analogSensorCount++;
+    if(flag = 1)
+    {
+      analogSensorCount++;
+      flag =0;
     aboveThresholdDuration = millis() - lastAboveThresholdTime;
     Serial.print("Analog Sensor Count: ");
     Serial.print(analogSensorCount);
@@ -69,5 +73,11 @@ void loop() {
     lcd.print(", Duration: ");
     lcd.print(aboveThresholdDuration / 1000); // Convert milliseconds to seconds
     lcd.print("s");
+    }
+    
+  }
+  else if(sensorValue > threshold)
+  {
+    flag = 1;
   }
 }
