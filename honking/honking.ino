@@ -4,11 +4,16 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // Set the LCD address to 0x27 for a 16 chars and 2 line display
 
 const int buttonPin = D0;  // Pin connected to the button
+const int analogPin = A0;   // Pin connected to the analog sensor
 unsigned long lastPressTime = 0;
 int buttonState = 0;
 int lastButtonState = 0;
 int buttonPressCount = 0;
 unsigned long totalPressedTime = 0;
+int analogSensorCount = 0;
+unsigned long aboveThresholdDuration = 0;
+unsigned long lastAboveThresholdTime = 0;
+const int threshold = 475;
 
 void setup() {
   Serial.begin(9600);
@@ -43,4 +48,26 @@ void loop() {
   }
 
   lastButtonState = buttonState;
+
+  // Analog sensor reading and processing
+  int sensorValue = analogRead(analogPin);
+  if (sensorValue < threshold) {
+    if (analogSensorCount == 0) {
+      lastAboveThresholdTime = millis();
+    }
+    analogSensorCount++;
+    aboveThresholdDuration = millis() - lastAboveThresholdTime;
+    Serial.print("Analog Sensor Count: ");
+    Serial.print(analogSensorCount);
+    Serial.print(", Above Threshold Duration: ");
+    Serial.print(aboveThresholdDuration / 1000); // Convert milliseconds to seconds
+    Serial.println(" seconds");
+
+    lcd.setCursor(0, 2);
+    lcd.print("Sensor Count: ");
+    lcd.print(analogSensorCount);
+    lcd.print(", Duration: ");
+    lcd.print(aboveThresholdDuration / 1000); // Convert milliseconds to seconds
+    lcd.print("s");
+  }
 }
