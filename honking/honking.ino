@@ -9,8 +9,6 @@ unsigned long honk_start = 0;
 unsigned long honk_dur = 0;
 unsigned long total_dur = 0;
 
-
-
 void setup() {
   Serial.begin(9600);
   lcd.backlight();
